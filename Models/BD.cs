@@ -6,7 +6,7 @@ namespace TP_Patitas.Models
     public class BD
     {
         private static string _connectionString =
-        @"Server= SQLEXPRESS;DataBase=TP_Patitas;Integrated Security=True;TrustServerCertificate=True;";
+        @"Server=JazminHan\SQLEXPRESS;DataBase=TP_Patitas;Integrated Security=True;TrustServerCertificate=True;";
 
         public static Usuario ValidarUsuario(string nombreUsuario, string contrasena)
         {
@@ -56,5 +56,39 @@ namespace TP_Patitas.Models
                 connection.Execute(query, usuario);
             }
         }
+
+        public static List<Profesional> ObtenerProfesionales(int desde, int cantidad)
+        {
+            List<Profesional> profesionales = new List<Profesional>();
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT p.IdProfesional, p.Nombre, p.Descripcion, p.Imagen,
+                                        p.IdCategoria, p.Activo, c.Nombre AS NombreCategoria
+                                FROM Profesionales p
+                                INNER JOIN Categorias c ON c.IdCategoria = p.IdCategoria
+                                WHERE p.Activo = 1
+                                ORDER BY p.IdProfesional
+                                OFFSET @desde ROWS FETCH NEXT @cantidad ROWS ONLY";
+
+                profesionales = connection.Query<Profesional>(query, new { desde, cantidad }).ToList();
+            }
+
+            return profesionales;
+        }
+
+        public static int ContarProfesionales()
+        {
+            int cantidad = 0;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM Profesionales WHERE Activo = 1";
+                cantidad = connection.QueryFirstOrDefault<int>(query);
+            }
+
+            return cantidad;
+        }
+
     }
 }
