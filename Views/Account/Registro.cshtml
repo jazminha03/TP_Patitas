@@ -1,0 +1,34 @@
+
+@{
+    ViewData["Title"] = "Crear cuenta";
+}
+
+<h1>Crear una cuenta</h1>
+
+<form action="@Url.Action("Registro", "Account")" method="post">
+
+    <label>Nombre de usuario:</label>
+    <input type="text" name="NombreUsuario" required />
+
+    <label>Contraseña:</label>
+    <input type="password" name="Contrasena" required />
+
+    <label>Nombre:</label>
+    <input type="text" name="Nombre" required />
+
+    <label>Apellido:</label>
+    <input type="text" name="Apellido" required />
+
+    <input type="submit" value="Registrarme" />
+
+</form>
+
+@if (ViewBag.Error != null)
+{
+    <p>@ViewBag.Error</p>
+}
+
+<p>
+    ¿Ya tenés una cuenta?
+    <a href="@Url.Action("Login", "Account")">Iniciar sesión</a>
+</p>
