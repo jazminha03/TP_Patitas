@@ -1,0 +1,15 @@
+@{
+    Profesional p = ViewBag.Profesional;
+    ViewData["Title"] = p.Nombre;
+}
+
+<a href="@Url.Action("Index", "Profesionales")">← Volver al catálogo</a>
+
+<div class="detalle">
+    <img src="@p.Imagen" alt="@p.Nombre" />
+    <div>
+        <h1>@p.Nombre</h1>
+        <span>@p.NombreCategoria</span>
+        <p>@p.Descripcion</p>
+    </div>
+</div>

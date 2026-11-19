@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using TP_Patitas.Models;
 
@@ -6,13 +5,11 @@ namespace TP_Patitas.Controllers
 {
     public class AccountController : Controller
     {
-        // Mostrar Login
         public IActionResult Login()
         {
             return View();
         }
 
-        // Procesar Login
         [HttpPost]
         public IActionResult Login(string nombreUsuario, string contrasena)
         {
@@ -31,15 +28,13 @@ namespace TP_Patitas.Controllers
             return View();
         }
 
-        // Mostrar Registro
         public IActionResult Registro()
         {
             return View();
         }
 
-        // Procesar Registro
         [HttpPost]
-        public IActionResult Registro(Usuario usuario)
+        public IActionResult Registro(Usuario usuario, List<string> nombreMascota, List<string> especie)
         {
             Usuario existente = BD.BuscarUsuario(usuario.NombreUsuario);
 
@@ -49,12 +44,44 @@ namespace TP_Patitas.Controllers
                 return View();
             }
 
-            BD.AgregarUsuario(usuario);
+            // Armamos la lista de mascotas, ignorando filas vacías
+            List<Mascota> mascotas = new List<Mascota>();
+            for (int i = 0; i < nombreMascota.Count; i++)
+            {
+                string nombre = nombreMascota[i]?.Trim();
+
+                if (!string.IsNullOrEmpty(nombre) && i < especie.Count)
+                {
+                    if (nombre.Length > 10)
+                    {
+                        ViewBag.Error = "El nombre de cada mascota puede tener hasta 10 caracteres.";
+                        return View();
+                    }
+
+                    Mascota m = new Mascota();
+                    m.Nombre = nombre;
+                    m.Especie = especie[i];
+                    mascotas.Add(m);
+                }
+            }
+
+            if (mascotas.Count == 0)
+            {
+                ViewBag.Error = "Tenés que registrar al menos una mascota.";
+                return View();
+            }
+
+            int idUsuario = BD.AgregarUsuario(usuario);
+
+            foreach (Mascota m in mascotas)
+            {
+                m.IdUsuario = idUsuario;
+                BD.AgregarMascota(m);
+            }
 
             return RedirectToAction("Login");
         }
 
-        // Cerrar sesión
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();

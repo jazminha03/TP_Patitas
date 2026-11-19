@@ -52,3 +52,24 @@ if (btnVerMas) {
         }
     });
 }
+
+const btnAgregarMascota = document.getElementById("btnAgregarMascota");
+
+if (btnAgregarMascota) {
+    const contenedor = document.getElementById("mascotas");
+
+    btnAgregarMascota.addEventListener("click", function () {
+        const fila = contenedor.querySelector(".fila-mascota").cloneNode(true);
+        fila.querySelector("input").value = "";
+        fila.querySelector("select").selectedIndex = 0;
+        contenedor.appendChild(fila);
+    });
+
+    contenedor.addEventListener("click", function (e) {
+        if (e.target.classList.contains("btn-quitar")) {
+            if (contenedor.querySelectorAll(".fila-mascota").length > 1) {
+                e.target.closest(".fila-mascota").remove();
+            }
+        }
+    });
+}

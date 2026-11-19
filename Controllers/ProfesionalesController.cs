@@ -38,5 +38,24 @@ namespace TP_Patitas.Controllers
 
             return Json(new { profesionales = lista, hayMas = hayMas });
         }
+
+        public IActionResult Detalle(int id)
+        {
+            if (HttpContext.Session.GetInt32("IdUsuario") == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            Profesional profesional = BD.ObtenerProfesional(id);
+
+            // Si el id no existe o está inactivo, vuelve al catálogo
+            if (profesional == null)
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.Profesional = profesional;
+            return View();
+        }
 }
 }

@@ -44,16 +44,30 @@ namespace TP_Patitas.Models
             return usuario;
         }
 
-        public static void AgregarUsuario(Usuario usuario)
+        public static int AgregarUsuario(Usuario usuario)
         {
-            string query = @"INSERT INTO Usuarios
-                            (NombreUsuario, Contrasena, Nombre, Apellido)
-                            VALUES
-                            (@NombreUsuario, @Contrasena, @Nombre, @Apellido)";
+            int idUsuario = 0;
+
+            string query = @"INSERT INTO Usuarios (NombreUsuario, Contrasena, Nombre, Apellido)
+                            VALUES (@NombreUsuario, @Contrasena, @Nombre, @Apellido);
+                            SELECT CAST(SCOPE_IDENTITY() AS INT);";
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             {
-                connection.Execute(query, usuario);
+                idUsuario = connection.QueryFirstOrDefault<int>(query, usuario);
+            }
+
+            return idUsuario;
+        }
+
+        public static void AgregarMascota(Mascota mascota)
+        {
+            string query = @"INSERT INTO Mascotas (IdUsuario, Nombre, Especie)
+                            VALUES (@IdUsuario, @Nombre, @Especie)";
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                connection.Execute(query, mascota);
             }
         }
 
@@ -88,6 +102,24 @@ namespace TP_Patitas.Models
             }
 
             return cantidad;
+        }
+
+        public static Profesional ObtenerProfesional(int idProfesional)
+        {
+            Profesional profesional = null;
+
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            {
+                string query = @"SELECT p.IdProfesional, p.Nombre, p.Descripcion, p.Imagen,
+                                        p.IdCategoria, p.Activo, c.Nombre AS NombreCategoria
+                                FROM Profesionales p
+                                INNER JOIN Categorias c ON c.IdCategoria = p.IdCategoria
+                                WHERE p.IdProfesional = @idProfesional AND p.Activo = 1";
+
+                profesional = connection.QueryFirstOrDefault<Profesional>(query, new { idProfesional });
+            }
+
+            return profesional;
         }
 
     }
