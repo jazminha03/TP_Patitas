@@ -1,5 +1,6 @@
 @{
     Profesional p = ViewBag.Profesional;
+    List<Mascota> mascotas = ViewBag.Mascotas;
     ViewData["Title"] = p.Nombre;
 }
 
@@ -13,3 +14,45 @@
         <p>@p.Descripcion</p>
     </div>
 </div>
+
+<h2>Sacar turno</h2>
+
+@if (ViewBag.Error != null)
+{
+    <p style="color:red;">@ViewBag.Error</p>
+}
+
+@if (mascotas.Count == 0)
+{
+    <p>No tenés mascotas registradas, así que no podés sacar un turno.</p>
+}
+else
+{
+    <form action="@Url.Action("Crear", "Turnos")" method="POST">
+        <input type="hidden" name="idProfesional" value="@p.IdProfesional" />
+
+        <label>Fecha:</label>
+        <input type="date" id="fecha" name="fecha" required
+               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+               data-url="@Url.Action("HorariosLibres", "Turnos")"
+               data-profesional="@p.IdProfesional" />
+
+        <label>Horario:</label>
+        <select id="hora" name="hora" required disabled>
+            <option value="">Primero elegí una fecha</option>
+        </select>
+
+        <p id="mensajeHorarios"></p>
+
+        <label>Mascota:</label>
+        <select name="idMascota" required>
+            <option value="">Elegí una mascota</option>
+            @foreach (Mascota m in mascotas)
+            {
+                <option value="@m.IdMascotas">@m.Nombre (@m.Especie)</option>
+            }
+        </select>
+
+        <input type="submit" value="Confirmar turno" />
+    </form>
+}

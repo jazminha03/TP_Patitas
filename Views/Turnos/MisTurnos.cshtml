@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Mis turnos";
+    List<Turno> proximos = ViewBag.Proximos;
+    List<Turno> pasados = ViewBag.Pasados;
+}
+
+<h1>Mis turnos</h1>
+
+<p id="mensajeTurnos" style="color:red;"></p>
+
+<h2>Próximos</h2>
+
+<div id="listaProximos" data-url="@Url.Action("Cancelar", "Turnos")">
+    @foreach (Turno t in proximos)
+    {
+        <div class="turno">
+            <div>
+                <strong>@t.FechaHora.ToString("dd/MM/yyyy HH:mm")</strong>
+                <p>@t.NombreProfesional - @t.NombreCategoria</p>
+                <p>Mascota: @t.NombreMascota</p>
+            </div>
+            <button type="button" class="btn-cancelar" data-id="@t.IdTurnos">Cancelar</button>
+        </div>
+    }
+</div>
+
+<p id="sinProximos" @(proximos.Count > 0 ? "hidden" : "")>No tenés turnos próximos.</p>
+
+<h2>Pasados</h2>
+
+@foreach (Turno t in pasados)
+{
+    <div class="turno pasado">
+        <div>
+            <strong>@t.FechaHora.ToString("dd/MM/yyyy HH:mm")</strong>
+            @if (t.Cancelado)
+            {
+                <span> (Cancelado)</span>
+            }
+            <p>@t.NombreProfesional - @t.NombreCategoria</p>
+            <p>Mascota: @t.NombreMascota</p>
+        </div>
+    </div>
+}
+
+@if (pasados.Count == 0)
+{
+    <p>Todavía no tenés turnos pasados.</p>
+}

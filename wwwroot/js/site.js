@@ -73,3 +73,96 @@ if (btnAgregarMascota) {
         }
     });
 }
+
+const inputFecha = document.getElementById("fecha");
+
+if (inputFecha) {
+    const selectHora = document.getElementById("hora");
+    const mensaje = document.getElementById("mensajeHorarios");
+
+    inputFecha.addEventListener("change", async function () {
+        selectHora.innerHTML = "";
+        mensaje.textContent = "";
+
+        if (!inputFecha.value) {
+            selectHora.disabled = true;
+            selectHora.innerHTML = "<option value=''>Primero elegí una fecha</option>";
+            return;
+        }
+
+        const url = inputFecha.dataset.url
+            + "?idProfesional=" + inputFecha.dataset.profesional
+            + "&fecha=" + inputFecha.value;
+
+        const respuesta = await fetch(url);
+        const datos = await respuesta.json();
+
+        if (datos.login) {
+            window.location.href = "/Account/Login";
+            return;
+        }
+
+        if (datos.horarios.length === 0) {
+            selectHora.disabled = true;
+            selectHora.innerHTML = "<option value=''>Sin horarios libres</option>";
+            mensaje.textContent = datos.mensaje;
+            return;
+        }
+
+        selectHora.disabled = false;
+        selectHora.innerHTML = "<option value=''>Elegí un horario</option>";
+
+        datos.horarios.forEach(function (h) {
+            const opcion = document.createElement("option");
+            opcion.value = h;
+            opcion.textContent = h;
+            selectHora.appendChild(opcion);
+        });
+    });
+
+
+    
+
+}
+
+const listaProximos = document.getElementById("listaProximos");
+
+if (listaProximos) {
+    const mensajeTurnos = document.getElementById("mensajeTurnos");
+    const sinProximos = document.getElementById("sinProximos");
+
+    listaProximos.addEventListener("click", async function (e) {
+        if (!e.target.classList.contains("btn-cancelar")) {
+            return;
+        }
+
+        if (!confirm("¿Seguro que querés cancelar este turno?")) {
+            return;
+        }
+
+        mensajeTurnos.textContent = "";
+
+        const respuesta = await fetch(listaProximos.dataset.url, {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "idTurno=" + e.target.dataset.id
+        });
+        const datos = await respuesta.json();
+
+        if (datos.login) {
+            window.location.href = "/Account/Login";
+            return;
+        }
+
+        if (datos.ok) {
+            // desaparece de la lista sin recargar la página
+            e.target.closest(".turno").remove();
+
+            if (listaProximos.querySelectorAll(".turno").length === 0) {
+                sinProximos.hidden = false;
+            }
+        } else {
+            mensajeTurnos.textContent = datos.mensaje;
+        }
+    });
+}

@@ -1,5 +1,8 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@{
+    bool logueado = Context.Session.GetInt32("IdUsuario") != null;
+}
+<!DOCTYPE html>
+<html lang="es">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,19 +16,34 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TP_Patitas</a>
+                <a class="navbar-brand" href="@Url.Action("Index", "Profesionales")">🐾 Patitas</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (logueado)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("Index", "Profesionales")">Profesionales</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("MisTurnos", "Turnos")">Mis turnos</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("Logout", "Account")">Salir</a>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("Login", "Account")">Ingresar</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" href="@Url.Action("Registro", "Account")">Registrarme</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
@@ -39,7 +57,7 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2026 - TP_Patitas - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2026 - TP_Patitas
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
