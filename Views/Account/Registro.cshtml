@@ -1,53 +1,55 @@
-
 @{
     ViewData["Title"] = "Crear cuenta";
 }
 
-<h1>Crear una cuenta</h1>
+<section class="caja-central">
+    <h1>Crear una cuenta</h1>
 
-<form action="@Url.Action("Registro", "Account")" method="post">
+    <form action="@Url.Action("Registro", "Account")" method="post">
 
-    <label>Nombre de usuario:</label>
-    <input type="text" name="NombreUsuario" required />
+        <label>Nombre de usuario:</label>
+        <input type="text" name="NombreUsuario" required />
 
-    <label>Contraseña:</label>
-    <input type="password" name="Contrasena" required />
+        <label>Contraseña:</label>
+        <input type="password" name="Contrasena" required />
 
-    <label>Nombre:</label>
-    <input type="text" name="Nombre" required />
+        <label>Nombre:</label>
+        <input type="text" name="Nombre" required />
 
-    <label>Apellido:</label>
-    <input type="text" name="Apellido" required />
+        <label>Apellido:</label>
+        <input type="text" name="Apellido" required />
 
-    <h3>Tus mascotas</h3>
+        <h3>Tus mascotas</h3>
 
-    <div id="mascotas">
-        <div class="fila-mascota">
-            <label>Nombre de la mascota:</label>
-            <input type="text" name="nombreMascota" maxlength="10" required />
+        <div id="mascotas">
+            <div class="fila-mascota">
+                <label>Nombre de la mascota:</label>
+                <input type="text" name="nombreMascota" maxlength="10" required />
 
-            <label>Especie:</label>
-            <select name="especie">
-                <option value="Perro">Perro</option>
-                <option value="Gato">Gato</option>
-                <option value="Conejo">Conejo</option>
-                <option value="Ave">Ave</option>
-                <option value="Otro">Otro</option>
-            </select>
+                <label>Especie:</label>
+                <select name="especie">
+                    <option value="Perro">Perro</option>
+                    <option value="Gato">Gato</option>
+                    <option value="Conejo">Conejo</option>
+                    <option value="Ave">Ave</option>
+                    <option value="Otro">Otro</option>
+                </select>
 
-            <button type="button" class="btn-quitar">Quitar</button>
+                <button type="button" class="boton-quitar">Quitar</button>
+            </div>
         </div>
-    </div>
 
-    <button type="button" id="btnAgregarMascota">+ Agregar otra mascota</button>
+        <button type="button" id="btnAgregarMascota" class="boton-agregar">+ Agregar otra mascota</button>
 
-    <input type="submit" value="Registrarme" />
+        <input type="submit" value="Registrarme" />
 
-</form>
+    </form>
 
-@if (ViewBag.Error != null)
-{
-    <p>@ViewBag.Error</p>
-}
+    @if (ViewBag.Error != null)
+    {
+        <p class="error texto-centrado">@ViewBag.Error</p>
+    }
 
-<p>¿Ya tenés una cuenta?<a href="@Url.Action("Login", "Account")">Iniciar sesión</a></p>
+    <p class="texto-centrado">¿Ya tenés una cuenta?<a href="@Url.Action("Login", "Account")">Iniciar sesión</a>
+    </p>
+</section>
