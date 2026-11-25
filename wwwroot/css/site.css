@@ -521,3 +521,10 @@ form input[type="submit"] {
     aspect-ratio: 4 / 3;
   }
 }
+
+
+.ayuda
+{
+    font-size: 90%;
+    color: #24454a;
+}

@@ -36,6 +36,12 @@ namespace TP_Patitas.Controllers
         [HttpPost]
         public IActionResult Registro(Usuario usuario, List<string> nombreMascota, List<string> especie)
         {
+            if (usuario.Contrasena == null || usuario.Contrasena.Length < 6)
+            {
+                ViewBag.Error = "La contraseña debe tener al menos 6 caracteres.";
+                return View();
+            }
+
             Usuario existente = BD.BuscarUsuario(usuario.NombreUsuario);
 
             if (existente != null)

@@ -5,13 +5,14 @@
 <section class="caja-central">
     <h1>Crear una cuenta</h1>
 
-    <form action="@Url.Action("Registro", "Account")" method="post">
+    <form action="@Url.Action("Registro", "Account")" method="post" onsubmit="return ValidarRegistro()">
 
         <label>Nombre de usuario:</label>
         <input type="text" name="NombreUsuario" required />
 
         <label>Contraseña:</label>
-        <input type="password" name="Contrasena" required />
+        <input type="password" id="contrasena" name="Contrasena" minlength="6" required />
+        <p class="ayuda">La contraseña debe tener al menos 6 caracteres.</p>
 
         <label>Nombre:</label>
         <input type="text" name="Nombre" required />

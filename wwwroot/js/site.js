@@ -1,168 +1,224 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿// VER MAS PROFESIONALES
 
-// Write your JavaScript code.
+let botonVerMas = document.getElementById("btnVerMas");
 
+if (botonVerMas != null)
+{
+    botonVerMas.addEventListener("click", function () {
 
-const btnVerMas = document.getElementById("btnVerMas");
+        let lista = document.getElementById("listaProfesionales");
+        let desde = lista.getElementsByClassName("tarjeta").length;
 
-if (btnVerMas) {
-    btnVerMas.addEventListener("click", async function () {
-        const lista = document.getElementById("listaProfesionales");
+        fetch(botonVerMas.getAttribute("data-url") + "?desde=" + desde)
+            .then(response => response.json())
+            .then(datos => {
 
-        // cuántos hay ya en pantalla = desde dónde pedir
-        const desde = lista.querySelectorAll(".tarjeta").length;
+                if (datos.login == true)
+                {
+                    window.location.href = "/Account/Login";
+                    return;
+                }
 
-        const respuesta = await fetch(btnVerMas.dataset.url + "?desde=" + desde);
-        const datos = await respuesta.json();
+                let contenido = "";
 
-        if (datos.login) {
-            window.location.href = "/Account/Login";
-            return;
-        }
+                for (let i = 0; i < datos.profesionales.length; i++)
+                {
+                    let p = datos.profesionales[i];
 
-        datos.profesionales.forEach(function (p) {
-            const a = document.createElement("a");
-            a.className = "tarjeta";
-            a.href = p.url;
+                    contenido += "<a class='tarjeta' href='" + p.url + "'>" +
+                        "<img src='" + p.imagen + "' alt='" + p.nombre + "' />" +
+                        "<div class='tarjeta-info'>" +
+                        "<h3>" + p.nombre + "</h3>" +
+                        "<span class='categoria'>" + p.categoria + "</span>" +
+                        "</div></a>";
+                }
 
-            const img = document.createElement("img");
-            img.src = p.imagen;
-            img.alt = p.nombre;
+                lista.innerHTML += contenido;
 
-            const info = document.createElement("div");
-            info.className = "tarjeta-info";
+                if (datos.hayMas == false)
+                {
+                    botonVerMas.style.display = "none";
+                }
 
-            const h3 = document.createElement("h3");
-            h3.textContent = p.nombre;
+            });
 
-            const span = document.createElement("span");
-            span.textContent = p.categoria;
-
-            info.appendChild(h3);
-            info.appendChild(span);
-            a.appendChild(img);
-            a.appendChild(info);
-            lista.appendChild(a);
-        });
-
-        // si no quedan más, el botón desaparece
-        if (!datos.hayMas) {
-            btnVerMas.remove();
-        }
     });
 }
 
-const btnAgregarMascota = document.getElementById("btnAgregarMascota");
 
-if (btnAgregarMascota) {
-    const contenedor = document.getElementById("mascotas");
+// AGREGAR Y QUITAR MASCOTAS (REGISTRO)
 
-    btnAgregarMascota.addEventListener("click", function () {
-        const fila = contenedor.querySelector(".fila-mascota").cloneNode(true);
-        fila.querySelector("input").value = "";
-        fila.querySelector("select").selectedIndex = 0;
-        contenedor.appendChild(fila);
+let botonAgregarMascota = document.getElementById("btnAgregarMascota");
+
+if (botonAgregarMascota != null)
+{
+    let contenedorMascotas = document.getElementById("mascotas");
+
+    botonAgregarMascota.addEventListener("click", function () {
+
+        let nuevaFila = contenedorMascotas.getElementsByClassName("fila-mascota")[0].cloneNode(true);
+
+        nuevaFila.getElementsByTagName("input")[0].value = "";
+        nuevaFila.getElementsByTagName("select")[0].selectedIndex = 0;
+
+        contenedorMascotas.appendChild(nuevaFila);
+
     });
 
-    contenedor.addEventListener("click", function (e) {
-        if (e.target.classList.contains("btn-quitar")) {
-            if (contenedor.querySelectorAll(".fila-mascota").length > 1) {
-                e.target.closest(".fila-mascota").remove();
+    // Quitar una fila (siempre queda al menos una)
+    contenedorMascotas.addEventListener("click", function (e) {
+
+        if (e.target.className == "boton-quitar")
+        {
+            let fila = e.target;
+
+            while (fila.className != "fila-mascota")
+            {
+                fila = fila.parentElement;
+            }
+
+            if (contenedorMascotas.getElementsByClassName("fila-mascota").length > 1)
+            {
+                fila.remove();
             }
         }
+
     });
 }
 
-const inputFecha = document.getElementById("fecha");
 
-if (inputFecha) {
-    const selectHora = document.getElementById("hora");
-    const mensaje = document.getElementById("mensajeHorarios");
+// HORARIOS LIBRES (DETALLE DEL PROFESIONAL)
 
-    inputFecha.addEventListener("change", async function () {
-        selectHora.innerHTML = "";
+let inputFecha = document.getElementById("fecha");
+
+if (inputFecha != null)
+{
+    inputFecha.addEventListener("change", function () {
+
+        let selectHora = document.getElementById("hora");
+        let mensaje = document.getElementById("mensajeHorarios");
+
         mensaje.textContent = "";
 
-        if (!inputFecha.value) {
+        if (inputFecha.value == "")
+        {
             selectHora.disabled = true;
             selectHora.innerHTML = "<option value=''>Primero elegí una fecha</option>";
             return;
         }
 
-        const url = inputFecha.dataset.url
-            + "?idProfesional=" + inputFecha.dataset.profesional
-            + "&fecha=" + inputFecha.value;
+        let url = inputFecha.getAttribute("data-url") +
+            "?idProfesional=" + inputFecha.getAttribute("data-profesional") +
+            "&fecha=" + inputFecha.value;
 
-        const respuesta = await fetch(url);
-        const datos = await respuesta.json();
+        fetch(url)
+            .then(response => response.json())
+            .then(datos => {
 
-        if (datos.login) {
-            window.location.href = "/Account/Login";
-            return;
-        }
+                if (datos.login == true)
+                {
+                    window.location.href = "/Account/Login";
+                    return;
+                }
 
-        if (datos.horarios.length === 0) {
-            selectHora.disabled = true;
-            selectHora.innerHTML = "<option value=''>Sin horarios libres</option>";
-            mensaje.textContent = datos.mensaje;
-            return;
-        }
+                if (datos.horarios.length == 0)
+                {
+                    selectHora.disabled = true;
+                    selectHora.innerHTML = "<option value=''>Sin horarios libres</option>";
+                    mensaje.textContent = datos.mensaje;
+                }
+                else
+                {
+                    let opciones = "<option value=''>Elegí un horario</option>";
 
-        selectHora.disabled = false;
-        selectHora.innerHTML = "<option value=''>Elegí un horario</option>";
+                    for (let i = 0; i < datos.horarios.length; i++)
+                    {
+                        opciones += "<option value='" + datos.horarios[i] + "'>" + datos.horarios[i] + "</option>";
+                    }
 
-        datos.horarios.forEach(function (h) {
-            const opcion = document.createElement("option");
-            opcion.value = h;
-            opcion.textContent = h;
-            selectHora.appendChild(opcion);
-        });
+                    selectHora.disabled = false;
+                    selectHora.innerHTML = opciones;
+                }
+
+            });
+
     });
-
-
-    
-
 }
 
-const listaProximos = document.getElementById("listaProximos");
 
-if (listaProximos) {
-    const mensajeTurnos = document.getElementById("mensajeTurnos");
-    const sinProximos = document.getElementById("sinProximos");
+// VALIDAR REGISTRO
 
-    listaProximos.addEventListener("click", async function (e) {
-        if (!e.target.classList.contains("btn-cancelar")) {
+function ValidarRegistro()
+{
+    let contrasena = document.getElementById("contrasena").value;
+
+    if (contrasena.length < 6)
+    {
+        alert("La contraseña debe tener al menos 6 caracteres.");
+        return false;
+    }
+
+    return true;
+}
+
+// CANCELAR TURNOS (MIS TURNOS)
+
+let botonesCancelar = document.getElementsByClassName("boton-cancelar");
+
+for (let i = 0; i < botonesCancelar.length; i++)
+{
+    botonesCancelar[i].addEventListener("click", function () {
+
+        if (confirm("¿Seguro que querés cancelar este turno?") == false)
+        {
             return;
         }
 
-        if (!confirm("¿Seguro que querés cancelar este turno?")) {
-            return;
-        }
+        let boton = this;
+        let idTurno = boton.getAttribute("data-id");
+        let listaProximos = document.getElementById("listaProximos");
+        let mensajeTurnos = document.getElementById("mensajeTurnos");
 
         mensajeTurnos.textContent = "";
 
-        const respuesta = await fetch(listaProximos.dataset.url, {
+        fetch(listaProximos.getAttribute("data-url"), {
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: "idTurno=" + e.target.dataset.id
-        });
-        const datos = await respuesta.json();
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "idTurno=" + idTurno
+        })
+        .then(response => response.json())
+        .then(datos => {
 
-        if (datos.login) {
-            window.location.href = "/Account/Login";
-            return;
-        }
-
-        if (datos.ok) {
-            // desaparece de la lista sin recargar la página
-            e.target.closest(".turno").remove();
-
-            if (listaProximos.querySelectorAll(".turno").length === 0) {
-                sinProximos.hidden = false;
+            if (datos.login == true)
+            {
+                window.location.href = "/Account/Login";
+                return;
             }
-        } else {
-            mensajeTurnos.textContent = datos.mensaje;
-        }
+
+            if (datos.ok == true)
+            {
+                let turno = boton;
+
+                while (turno.className != "turno")
+                {
+                    turno = turno.parentElement;
+                }
+
+                turno.remove();
+
+                if (listaProximos.getElementsByClassName("turno").length == 0)
+                {
+                    document.getElementById("sinProximos").hidden = false;
+                }
+            }
+            else
+            {
+                mensajeTurnos.textContent = datos.mensaje;
+            }
+
+        });
+
     });
 }
